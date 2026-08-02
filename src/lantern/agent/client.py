@@ -26,7 +26,7 @@ anthropic = type("_AnthropicModule", (), {"Anthropic": _SDKAnthropic})
 class AnthropicClient:
     """Small wrapper over the Anthropic SDK's ``messages.create()`` API."""
 
-    DEFAULT_MODEL = "claude-sonnet-4-20250514"
+    DEFAULT_MODEL = "claude-sonnet-4-6"
     DEFAULT_MAX_TOKENS = 4096
 
     def __init__(self, api_key: str | None = None, model: str | None = None) -> None:
