@@ -51,12 +51,16 @@ class ReadDocumentRequest(_BaseSchemaModel):
 class CreateDirectoryRequest(_BaseSchemaModel):
     path: str
     path_label: str | None = None
+    confidence: str = "NONE"
+    rationale: str
 
 
 class WriteDocumentRequest(_BaseSchemaModel):
     path: str
     content: str
     path_label: str | None = None
+    confidence: str = "NONE"
+    rationale: str
 
 
 class MoveOrRenameFileRequest(_BaseSchemaModel):
@@ -64,11 +68,15 @@ class MoveOrRenameFileRequest(_BaseSchemaModel):
     destination: str
     source_label: str | None = None
     destination_label: str | None = None
+    confidence: str = "NONE"
+    rationale: str
 
 
 class DeleteFileRequest(_BaseSchemaModel):
     path: str
     path_label: str | None = None
+    confidence: str = "NONE"
+    rationale: str
 
 
 class FinalizeResponseRequest(_BaseSchemaModel):

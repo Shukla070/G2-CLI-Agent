@@ -31,12 +31,33 @@ class Turn:
 
 @dataclass(slots=True)
 class PendingInteraction:
-    """A frozen, human-readable description of a paused action."""
+    """A frozen, human-readable description of a paused action.
+
+    Two kinds of pause exist, distinguished by ``kind``:
+
+    * ``"tool_confirmation"`` — a mutating tool call (write/move/delete/
+      create) was classified LOW/MEDIUM/HIGH by the Action Gate. Resuming
+      means interpreting the human's reply as approve/deny and, if
+      approved, re-executing ``tool_name`` with ``tool_input`` after a
+      fresh sandbox re-validation.
+    * ``"clarification"`` — a ``finalize_response`` call itself was
+      classified LOW/MEDIUM/HIGH (ambiguous request needing a choice, or
+      an answer that would expose restricted content). Resuming means
+      feeding the human's free-text reply back to the model as the next
+      turn in the same task, rather than executing anything.
+
+    ``tool_input`` carries the exact arguments the model supplied for the
+    paused tool call, so a resume — even after a process restart — can
+    re-run the same decision without re-asking the model to re-derive it.
+    Both new fields default so old session JSON without them still loads.
+    """
 
     tool_call_id: str
     tool_name: str
     description: str
     confirmation_prompt: str
+    kind: str = "tool_confirmation"
+    tool_input: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
