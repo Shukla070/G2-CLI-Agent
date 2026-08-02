@@ -1,0 +1,18 @@
+Transcript: Interview with Dr. Aris Thorne
+Topic: Havenport Coastal Erosion
+
+Interviewer: Dr. Thorne, thank you for sitting down with us. The data in your recent report is quite alarming. Can you elaborate on why the Havenport seawall is failing faster than originally predicted back in the 1980s?
+
+Dr. Thorne: The primary issue is that the engineers in the 1980s were building for a static ocean. They looked at historical weather patterns and built a wall to withstand the 'hundred-year storm' based on past data. They did not factor in a dynamic, accelerating baseline. Sea levels aren't just rising; the volume of the ocean is expanding as it warms. This means that every standard winter storm now hits the wall with significantly more kinetic energy than it did thirty years ago.
+
+Interviewer: You mentioned micro-fractures in the retaining blocks. How critical is that damage right now?
+
+Dr. Thorne: It is highly critical. Concrete is strong under compression, but it is brittle. Once saltwater penetrates those micro-fractures, it begins to corrode the internal steel rebar. As the rebar rusts, it expands, causing the concrete to spall and break apart from the inside out. It's a compounding failure. If a major storm surge hits those weakened sections, the wall won't just overtop; it could physically collapse, funneling the ocean directly into the lower residential basin of Havenport. We can't just patch it; the entire structural philosophy needs to be re-evaluated.
+
+Interviewer: So, what is the alternative?
+
+Dr. Thorne: We have to look at managed retreat and natural buffers. We spent the last century destroying salt marshes to build beachfront property. Those marshes were nature's shock absorbers. Replanting those ecosystems is far more sustainable, and ultimately cheaper, than trying to pour higher concrete walls into the sea.
+
+Interviewer: What are the immediate priorities while those long-term solutions are being planned?
+
+Dr. Thorne: The first step is continuous structural monitoring and targeted reinforcement of the most vulnerable sections. We also need improved flood preparedness for nearby communities, because reducing risk during the transition period is just as important as investing in permanent coastal resilience.

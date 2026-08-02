@@ -1,0 +1,10 @@
+Attendees: Sarah Jenkins (Managing Editor), Marcus Vance (Senior Editor), Chloe Park (Art Director), David Lin (Lead Researcher)
+
+Agenda Item 1: The Coastal Chapter Revisions
+Marcus raised concerns regarding the current draft of the coastal chapter. He noted that while the research provided by Dr. Thorne is excellent, the tone of the chapter is currently too academic for our target demographic. Sarah agreed and requested that the chapter be sent back for a rewrite, focusing on the human impact of the erosion in Havenport rather than just the raw geological data. Chloe mentioned that the art department needs at least three weeks to finalize the infographics detailing the seawall degradation, so the finalized text needs to be locked in by the 15th to keep production on schedule.
+
+Agenda Item 2: Upcoming Book Release
+The board discussed the upcoming release of "The Silent Ocean." David confirmed that all fact-checking has been completed for the deep-sea ecosystem sections. However, there is a minor dispute regarding the classification of the newly discovered Yeti Crab variant. David will consult with an external marine biologist to verify the taxonomy before the book goes to print. Sarah reminded the team that the manuscript for "The Silent Ocean" is currently marked as APPROVED and cannot undergo any structural changes without her explicit authorization.
+
+Agenda Item 3: Security Protocol and Agent Integration
+The integration of the new Lantern AI assistant was discussed. Marcus expressed concern about the AI accidentally leaking information from the upcoming spring catalog. Sarah reiterated the importance of the new embargo policy. She stressed that all editors must ensure that the AI is fully aware of the policy documents before it is allowed to generate any external summaries. The team agreed to run a series of controlled tests next week to verify that the AI correctly identifies and respects embargoed files. Meeting adjourned at 11:30 AM.

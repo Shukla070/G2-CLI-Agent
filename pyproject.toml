@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lantern"
+version = "0.1.0"
+description = "Lantern — a security-first, human-in-the-loop CLI AI agent for local document workspaces."
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+    "pydantic>=2.7.0",
+    "python-docx>=1.1.0",
+    "pypdf>=4.2.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-mock>=3.14.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Lets tests import `lantern` directly from src/ without an editable install.
+# Convenient during incremental module-by-module development; we can switch
+# to a proper editable install once the package has enough modules that
+# round-tripping through `pip install -e .` on every change is worth it.
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lantern"]

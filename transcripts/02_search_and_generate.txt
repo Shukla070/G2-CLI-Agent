@@ -1,0 +1,5 @@
+PROMPT: Search the example workspace for the coastal erosion topic and then generate a concise two-bullet summary of what the relevant note says.
+
+RESPONSE:
+ThinkingBlock(signature='EoMCCokBCBAYAipAQ8dm3fgG8geW6rhEimUPOYp2rFH0OyhHmkrFBSuJI1G8Q4JxzmOYXphTMzt+5ABvwUe6x886pUCcFUQUk+SpZTIPY2xhdWRlLXNvbm5ldC01OABCCHRoaW5raW5nWiQ0YzRjNDgwOC0zZmZkLTQ4N2MtYjNjZi0xZjIxN2Y0MGNhNjISDK7bJZ9DTHfZP8JygxoM1GsbOZ/3Ccryxzp+IjC500qF1ekJHiuLinzeXun/55AjZ1p8f9QQp+eqTvAfWBMn1d1seNkU//qzb/GakQAqJ1uTOD4M98MMvSkdO6V1j6iCoI2xQ4BKWDRpV03z4f7jRzEZeRFRlhgB', thinking='', type='thinking')
+TOOL_USE name=search_documents input={'query': 'coastal erosion'}
