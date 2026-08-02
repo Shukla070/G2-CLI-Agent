@@ -1,134 +1,189 @@
-# Transcript 05 — Session Stop and Resume
-# Scenario: A session is interrupted mid-approval, then resumed from a new process.
+# Session Stopped and Resumed
+
+**Workspace:** `C:\D\lantern\example_workspace`
+**Session ID:** `session-abdf4eb6ce74`
 
 ## Starting Workspace State
-- `research_notes/coastal_erosion_study.txt` — ~2 KB, coastal erosion research
-- `outputs/` — empty output directory
-- `policies/embargo_policy.md` — citation and embargo policy
 
-## Session 1: Start and Pause
+**Source files:**
+- `drafts/coastal_chapter_draft_v1.docx` (2139 bytes)
+- `drafts/deep_sea_intro_draft.docx` (1938 bytes)
+- `interviews/dr_thorne_interview.txt` (2272 bytes)
+- `interviews/local_resident_transcript.txt` (1763 bytes)
+- `meeting_records/editorial_board_october.md` (1982 bytes)
+- `outputs/thorne_interview_summary.md` (1408 bytes)
+- `reference_material/embargoed_climate_models.pdf` (2570 bytes)
+- `reference_material/style_guide_excerpt.pdf` (2105 bytes)
+- `research_notes/coastal_erosion_study.txt` (2089 bytes)
+- `research_notes/corrupted_note.txt` (2271 bytes)
+- `research_notes/deep_sea_ecosystems.txt` (2147 bytes)
 
-### User Message
-```
-Write a summary of the coastal erosion research to outputs/erosion_summary.txt.
-```
+**Policy files:**
+- `policies/embargo_policy.md` (2266 bytes)
 
-### Step 1: read_document
-**Tool call:** `read_document(path="research_notes/coastal_erosion_study.txt")`
-**Confidence:** NONE (read-only)
+## Turn 1
 
-**Result:** (Full text of the coastal erosion study)
+**User:** Delete the local resident interview transcript, it has data quality issues.
 
-### Step 2: write_document
-**Tool call:** `write_document(path="outputs/erosion_summary.txt", content="Coastal Erosion Summary\n\n...", confidence="NONE", rationale="Writing a new file to the output directory. Source is cited as required by citation policy.")`
+### API round trip 1
 
-**Action Gate evaluation:**
-1. **Sandbox:** Path resolves inside workspace. ✅
-2. **Classification:** `WRITE_NEW` (file doesn't exist yet) → floor = NONE.
-3. **Confidence:** Model declared NONE, floor is NONE → effective = NONE.
-4. **Outcome:** `EXECUTE` — write proceeds immediately.
-
-**Result:** File created at `outputs/erosion_summary.txt`.
-
-### Step 3: finalize_response
-**Tool call:** `finalize_response(content="I've written the summary to outputs/erosion_summary.txt.", confidence="NONE", rationale="New file created with citation.")`
-
-### Lantern's Response
-```
-I've written the summary to outputs/erosion_summary.txt, citing
-research_notes/coastal_erosion_study.txt as the source material.
+**Tool call:** `search_documents`
+```json
+{
+  "query": "local resident interview transcript"
+}
 ```
 
-### User's Second Message (in same session)
+### API round trip 2
+
+**Tool result(s) fed back to the model:**
+
 ```
-Now overwrite that file with a version that includes the interview data too.
-```
-
-### Step 4: read_document
-**Tool call:** `read_document(path="interviews/dr_thorne_interview.txt")`
-**Confidence:** NONE
-
-### Step 5: write_document (overwrite attempt)
-**Tool call:** `write_document(path="outputs/erosion_summary.txt", content="Updated Coastal Erosion Summary\n\n...", confidence="HIGH", rationale="Overwriting an existing file. The user explicitly requested this, but the overwrite is destructive and requires approval.")`
-
-**Action Gate evaluation:**
-1. **Sandbox:** Path resolves inside workspace. ✅
-2. **Classification:** `WRITE_OVERWRITE` (file already exists) → code-enforced floor = **HIGH**.
-3. **Confidence:** Model declared HIGH, floor is HIGH → effective = HIGH.
-4. **Outcome:** `AWAIT_INPUT` — turn paused, `PendingInteraction` saved.
-
-### Lantern's Response (PAUSED)
-```
-[HIGH] Write to 'outputs/erosion_summary.txt' (this may overwrite an existing file).
-Rationale: Overwriting an existing file. The user explicitly requested this,
-but the overwrite is destructive and requires approval.
-Reply 'yes' to approve or 'no' to cancel.
+No documents found matching 'local resident interview transcript'.
 ```
 
-### Session State Saved
-The session JSON is written atomically to `.lantern/sessions/session-abc123.json` with:
-- Full turn history (user messages + assistant responses)
-- `pending_interaction` containing the frozen overwrite decision
+**Tool call:** `search_documents`
+```json
+{
+  "query": "interview transcript"
+}
+```
 
-### ⚡ THE USER CLOSES THE APPLICATION ⚡
-(Ctrl+C, process killed, or terminal closed)
+### API round trip 3
+
+**Tool result(s) fed back to the model:**
+
+```
+Search results for 'interview transcript':
+
+Content matches (1):
+  • policies/embargo_policy.md  [POLICY]  (2.2 KB)
+    ↳ "...henever a source document—whether it is a research note, an interview transcript, or a draft manuscript—is used to generate new material, th..."
+
+Total: 1 result(s)
+```
+
+**Tool call:** `list_directory`
+```json
+{
+  "path": ""
+}
+```
+
+### API round trip 4
+
+**Tool result(s) fed back to the model:**
+
+```
+Contents of '.':
+
+  📁 drafts/  (2 items)
+  📁 interviews/  (2 items)
+  📁 meeting_records/  (1 items)
+  📁 outputs/  (1 items)
+  📁 policies/  (1 items)
+  📁 reference_material/  (2 items)
+  📁 research_notes/  (3 items)
+```
+
+**Tool call:** `list_directory`
+```json
+{
+  "path": "interviews"
+}
+```
+
+### API round trip 5
+
+**Tool result(s) fed back to the model:**
+
+```
+Contents of 'interviews':
+
+  📄 dr_thorne_interview.txt  (2.2 KB)  [SOURCE]
+  📄 local_resident_transcript.txt  (1.7 KB)  [SOURCE]
+```
+
+**Tool call:** `finalize_response`
+```json
+{
+  "content": "I found the file: **`interviews/local_resident_transcript.txt`**.\n\n\u26a0\ufe0f **This is a destructive action \u2014 deleting this file is permanent and cannot be undone.**\n\nDo you confirm that you'd like to delete `interviews/local_resident_transcript.txt` due to data quality issues?",
+  "rationale": "Deleting a file is an irreversible destructive action. I've located the likely file (interviews/local_resident_transcript.txt) and must confirm with the user before proceeding, per HIGH confidence protocol.",
+  "confidence": "HIGH",
+  "decision_type": "ask"
+}
+```
+
+**Status:** `awaiting_approval`
+
+**Lantern's response:**
+
+[HIGH] I found the file: **`interviews/local_resident_transcript.txt`**.
+
+⚠️ **This is a destructive action — deleting this file is permanent and cannot be undone.**
+
+Do you confirm that you'd like to delete `interviews/local_resident_transcript.txt` due to data quality issues?
+
 
 ---
 
-## Session 2: Resume from New Process
+## Session Resumed
 
-The user launches Lantern again:
-```bash
-python -m lantern.cli.main --workspace example_workspace --interactive
+**Workspace:** `C:\D\lantern\example_workspace`
+**Session ID:** `session-abdf4eb6ce74`
+
+## Turn 1
+
+**User:** yes
+
+### API round trip 1
+
+**Tool call:** `search_documents`
+```json
+{
+  "query": "local resident interview transcript"
+}
 ```
 
-### Automatic Session Restore
-- `SessionManager.find_latest_session()` loads `session-abc123.json`.
-- The session has a `pending_interaction` with `kind="tool_confirmation"`.
-- The CLI detects this and **immediately displays** the pending approval:
+### API round trip 2
+
+**Tool result(s) fed back to the model:**
 
 ```
-Lantern — session session-abc123
-Type 'exit' to quit.
+No documents found matching 'local resident interview transcript'.
+```
 
-⚠ Awaiting input
-[HIGH] Write to 'outputs/erosion_summary.txt' (this may overwrite an existing file).
-Rationale: Overwriting an existing file. The user explicitly requested this,
-but the overwrite is destructive and requires approval.
+**Tool call:** `list_directory`
+```json
+{
+  "path": "interviews"
+}
+```
+
+### API round trip 3
+
+**Tool result(s) fed back to the model:**
+
+```
+Contents of 'interviews':
+
+  📄 dr_thorne_interview.txt  (2.2 KB)  [SOURCE]
+  📄 local_resident_transcript.txt  (1.7 KB)  [SOURCE]
+```
+
+**Tool call:** `delete_file`
+```json
+{
+  "path": "interviews/local_resident_transcript.txt",
+  "rationale": "The user has explicitly confirmed they want to delete this file due to data quality issues. This is a permanent deletion of a workspace file. No embargo or citation policy conflicts apply to deletion of a source file at the user's request.",
+  "confidence": "HIGH"
+}
+```
+
+**Status:** `awaiting_approval`
+
+**Lantern's response:**
+
+[HIGH] Delete 'interviews/local_resident_transcript.txt'.
+Rationale: The user has explicitly confirmed they want to delete this file due to data quality issues. This is a permanent deletion of a workspace file. No embargo or citation policy conflicts apply to deletion of a source file at the user's request.
 Reply 'yes' to approve or 'no' to cancel.
-```
-
-### User Reply (from new process)
-```
-yes
-```
-
-### Resume Processing
-1. `resume_turn("yes")` is called.
-2. `_parse_confirmation("yes")` → `True`.
-3. The sandbox **re-validates** `outputs/erosion_summary.txt` — the path is still valid.
-4. The file is overwritten with the new content.
-5. `pending_interaction` is cleared.
-6. The model is re-invoked to complete the turn.
-
-### Lantern's Response
-```
-Done. outputs/erosion_summary.txt has been updated with both the coastal
-erosion study data and the interview findings from Dr. Thorne. Sources cited:
-research_notes/coastal_erosion_study.txt, interviews/dr_thorne_interview.txt.
-```
-
-## Confidence Levels
-- **Read operations:** NONE (no approval needed)
-- **Initial write (new file):** NONE (new file in output directory)
-- **Overwrite (existing file):** HIGH (code-enforced floor for overwrites)
-
-## Key Resume Behaviors Demonstrated
-1. **Session persistence survives process restart** — the JSON file contains all state.
-2. **Pending approval is restored and displayed immediately** — the user sees exactly what they left off on.
-3. **Path re-validation on resume** — the sandbox checks the path again, not trusting the frozen decision.
-4. **No duplicate turns** — the conversation history is plain text, not raw API blocks, so replay works cleanly.
-5. **Deterministic approval parsing** — "yes" is parsed by an allow-list, never by the model.
-
-## Final Workspace Effect
-**Created then overwritten:** `outputs/erosion_summary.txt` — final version includes both coastal erosion study and interview data, with source citations.
