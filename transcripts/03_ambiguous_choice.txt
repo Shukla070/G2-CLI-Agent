@@ -1,5 +1,0 @@
-PROMPT: There are two similarly named research files. Decide which one is the best match for the phrase "deep sea ecosystems" and explain why.
-
-RESPONSE:
-ThinkingBlock(signature='EpsCCokBCBAYAipA4BRNyJpE62fe0ByE/QpRWSFgLyfP4QOEyZTyHJjkuF+xQZS7tNdY6MrMCPZe6s8pUtTmcxapEd3r/G+J+//YpzIPY2xhdWRlLXNvbm5ldC01OABCCHRoaW5raW5nWiQ0YzRjNDgwOC0zZmZkLTQ4N2MtYjNjZi0xZjIxN2Y0MGNhNjISDA8CbsdebD9iNHj6XhoMsLv5DG5MrbgYbiJMIjBhs2G1qV4B2a4GcxTwpMcQ4IJxPJN8LIuF5G8IwAWNKmYetYA7sWh9WKIDK65cKzoqPwe2ppxwUMB5I6LueKZrbCG5vHlts6DZgp1j1nDlTPxHLsepoZio5hnXy60ae30yIXwU1b42qHx0VPLLvJsMVhgB', thinking='', type='thinking')
-TOOL_USE name=search_documents input={'query': 'deep sea ecosystems'}

@@ -96,7 +96,7 @@ pytest tests/unit/test_extraction.py tests/unit/test_read_tools.py tests/unit/te
 
 Expected output:
 ```
-274 passed, 8 skipped
+276 passed, 8 skipped
 ```
 
 The 8 skipped tests are symlink-escape tests that require admin privileges on Windows. They pass on Linux/macOS.

@@ -77,7 +77,7 @@ CLI (Typer + Rich)
 
 ```
 pytest -q
-274 passed, 8 skipped
+276 passed, 8 skipped
 ```
 
 The 8 skipped tests are symlink-escape tests that require admin privileges on Windows. They run on Linux/macOS CI.

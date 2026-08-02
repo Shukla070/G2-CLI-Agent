@@ -1,9 +1,15 @@
+"""Tests for Phase 9 — Agent client, prompt, and orchestrator.
+
+Updated for the Phase 9 rebuild: the orchestrator now returns
+``TurnResult`` (with ``.status`` and ``.message``), not a bare string.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
 
 from lantern.agent.client import AnthropicClient
-from lantern.agent.orchestrator import Orchestrator
+from lantern.agent.orchestrator import Orchestrator, TurnResult, TurnStatus
 from lantern.agent.prompt import render_prompt
 from lantern.security.sandbox import Sandbox
 from lantern.session import SessionManager
@@ -64,7 +70,7 @@ class TestAnthropicClient:
 
         monkeypatch.setattr("lantern.agent.client.anthropic.Anthropic", FakeAnthropic)
 
-        client = AnthropicClient(api_key="test-key", model="claude-sonnet-5")
+        client = AnthropicClient(api_key="test-key")
         response = client.messages.create(
             system="system prompt",
             messages=[{"role": "user", "content": "hello"}],
@@ -72,13 +78,16 @@ class TestAnthropicClient:
         )
 
         assert response == {"ok": True}
-        assert captured["model"] == "claude-sonnet-5"
+        assert captured["model"] == AnthropicClient.DEFAULT_MODEL
         assert captured["system"] == "system prompt"
-        assert captured["max_tokens"] == 256
+        assert captured["max_tokens"] == 4096
 
 
 class TestOrchestrator:
     def test_orchestrator_can_run_a_simple_turn(self, tmp_path: Path):
+        """The fake client returns read_document first, then finalize_response.
+        The orchestrator should execute the read, feed the result back, then
+        get the finalize and return a COMPLETED TurnResult with the content."""
         workspace = tmp_path / "workspace"
         workspace.mkdir()
         (workspace / "notes.txt").write_text("hello", encoding="utf-8")
@@ -87,22 +96,50 @@ class TestOrchestrator:
         manager = SessionManager(workspace)
         session = manager.create_session()
 
+        call_count = 0
+
         class FakeClient:
             def __init__(self):
                 self.messages = self
 
             def create(self, **kwargs):
-                return {
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "name": "read_document",
-                            "input": {"path": "notes.txt"},
-                        }
-                    ]
-                }
+                nonlocal call_count
+                call_count += 1
+                if call_count == 1:
+                    # First call: model reads the document
+                    return {
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "call_1",
+                                "name": "read_document",
+                                "input": {"path": "notes.txt"},
+                            }
+                        ]
+                    }
+                else:
+                    # Second call: model finalizes with an answer
+                    return {
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "call_2",
+                                "name": "finalize_response",
+                                "input": {
+                                    "content": "The note contains: hello",
+                                    "confidence": "NONE",
+                                    "rationale": "Simple read-only inspection.",
+                                    "decision_type": "inform",
+                                    "exposes_restricted_content": False,
+                                },
+                            }
+                        ]
+                    }
 
         orchestrator = Orchestrator(sandbox=sandbox, session_manager=manager, client=FakeClient())
         result = orchestrator.run_turn(session, user_message="read the note")
 
-        assert "notes.txt" in result
+        assert isinstance(result, TurnResult)
+        assert result.status is TurnStatus.COMPLETED
+        assert "hello" in result.message
+        assert call_count == 2  # Two API calls: read → finalize

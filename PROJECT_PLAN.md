@@ -152,38 +152,35 @@ containment guarantee rather than re-implementing it.
   the expected tool names, matches the handler map, and produces
   Anthropic-ready JSON Schema payloads.
 
-## Phase 9 — Agent Loop (🔨 fixing — conversation loop rebuild)
+## Phase 9 — Agent Loop (✅ done)
 
 **Modules:** `agent/client.py`, `agent/prompt.py`, `agent/orchestrator.py`
 
-Original single-turn scaffold replaced with a proper tool-forced
-conversation loop:
+Rebuilt from single-turn scaffold into a proper tool-forced loop:
 
-- `client.py`: thin wrapper around `anthropic` SDK's `messages.create()`.
-  `max_tokens` raised from 256 → 4096.
-- `prompt.py`: `render_prompt()` now uses the full system prompt with
-  tool descriptions, confidence rules, document-content wrapping defense,
-  and policy injection.
-- `orchestrator.py`: rewritten as a real `tool_use → tool_result → … →
-  finalize_response` loop:
-  - `tool_choice: {"type": "any"}` forces the model to always call a tool.
-  - Full conversation history sent to the API (model has memory).
-  - Read-only tools execute immediately; results fed back to the model.
-  - Mutating tools and `finalize_response` go through the Action Gate.
-  - `AWAIT_INPUT` pauses the loop and persists `PendingInteraction`.
-  - `finalize_response` is the terminal — extracts `content` as the answer.
-  - Safety valve: max 20 iterations per turn.
+- `client.py`: `max_tokens` = 4096, model = `claude-sonnet-4-20250514`.
+- `prompt.py`: full system prompt with tool descriptions, confidence rules,
+  document-content wrapping defense, and dynamic policy injection.
+- `orchestrator.py`: `tool_use → tool_result → … → finalize_response` loop
+  with `tool_choice: {"type": "any"}`, full conversation history, Action Gate
+  routing, `AWAIT_INPUT` pause/resume, and 20-iteration safety valve.
+- `TurnResult` / `TurnStatus` replace bare `str` returns.
+- `resume_turn()` re-validates paths through sandbox on every resume.
+- Tests updated to match new API: 276 passed, 8 skipped.
 
-## Phase 10 — CLI (🔨 fixing — interactive loop)
+## Phase 10 — CLI (✅ done)
 
 **Modules:** `cli/main.py`, `cli/rendering.py`
 
-- Typer entrypoint: `--workspace`, `--new`, `--resume <id>`, `--interactive`.
+- Typer entrypoint: `--workspace`, `--new`, `--resume <id>`, `--interactive`, `--prompt`.
 - `--interactive` runs a proper REPL: prompt → orchestrator turn → render
   response or confidence banner → auto-save.
-- `rendering.py` expanded with Rich-based confidence banners, option menus,
-  and response rendering.
-- Deleted the stale `main,py` (comma in name) artifact.
+- `_resolve_session()` handles session lifecycle: `--resume` loads exact session,
+  `--new` creates fresh, default auto-resumes latest (including pending approvals).
+- `_dispatch_turn()` is the single decision point for `run_turn` vs `resume_turn`.
+- `rendering.py`: Rich-based `render_turn_result()` with distinct formatting for
+  COMPLETED (green), REFUSED (red), and AWAITING_APPROVAL (yellow) states.
+- Deleted the stale `main,py` (comma-in-name) artifact.
 
 ## Phase 11 — Example Workspace (✅ done)
 
@@ -199,24 +196,29 @@ conversation loop:
 
 ## Phase 12 — Test Hardening / Integration (✅ done)
 
-- Mocked-Anthropic-client integration test driving a full
-  `tool_use → tool_use → finalize_response` turn through the real
-  Orchestrator + Action Gate.
-- Coverage gaps found while wiring modules together were closed and the
-  integration path now verifies cleanly in the test suite.
+- Mocked-Anthropic-client integration test driving a full two-step
+  `read_document → finalize_response` loop through the real
+  Orchestrator + Action Gate, verifying `TurnResult` contract.
+- CLI tests updated for `TurnResult` API and new `--prompt` routing.
+- Full suite: **276 passed, 8 skipped** (symlink tests on Windows).
 
 ## Phase 13 — Recorded Transcripts (✅ done)
 
-Against the real API, ≥6 runs covering, per the assignment text directly:
-ordinary search/question · search-and-generate task · ambiguous request
-needing a real choice · consequential action needing explicit approval ·
-a session stopped and resumed · adversarial sandbox-escape and
-policy-bypass attempts.
+Six detailed transcripts in `transcripts/`, each showing starting files,
+exact user messages, Lantern's tool calls with confidence levels, actions
+attempted, and final workspace effect:
 
-## Phase 14 — Docs & Submission Packaging (🔨 in progress)
+1. `01_ordinary_search_question.md` — search + read + NONE answer
+2. `02_search_and_generate.md` — search + read + write_document + citations
+3. `03_ambiguous_choice.md` — MEDIUM confidence, 3 options, user follow-up
+4. `04_consequential_approval.md` — delete with HIGH approval + denial scenario
+5. `05_session_resume.md` — pause mid-overwrite, kill process, resume from new CLI
+6. `06_adversarial_escape.md` — 5 attack vectors: path traversal, absolute path,
+   prompt injection, verbal policy override, policy file deletion
 
-- `README.md` (what Lantern does, design tour, security strategy).
-- `SETUP.md` (install, configure `.env`, run in example workspace, run
-  tests).
-- Final ZIP: source + example workspace + tests + transcripts, no `.env`,
-  no API key, no caches/venvs.
+## Phase 14 — Docs & Submission Packaging (✅ done)
+
+- `README.md`: architecture diagram, module map, security strategy, design decisions.
+- `SETUP.md`: installation, API key config, all CLI modes, test commands, troubleshooting.
+- `PROJECT_PLAN.md`: living build record with all 14 phases complete.
+- Clean repository: no `.env`, no API key, no `__pycache__`, no stale artifacts.
