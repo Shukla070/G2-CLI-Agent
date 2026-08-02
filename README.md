@@ -94,6 +94,7 @@ lantern/
 ├── tests/                # Unit + integration tests
 ├── example_workspace/    # Demo workspace (research notes, policies, output)
 ├── transcripts/          # 6 recorded API transcripts
+├── scripts/              # record_transcript.py — regenerates transcripts against the live API (see SETUP.md)
 ├── PROJECT_PLAN.md       # Living build plan
 ├── SETUP.md              # Installation & usage instructions
 └── pyproject.toml        # Dependencies & build config
